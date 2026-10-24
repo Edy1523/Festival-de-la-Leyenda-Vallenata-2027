@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Festival Vallenato 2027</title>
+</head>
+<body>
+    <h1>Bienvenido al Festival de la Leyenda Vallenata</h1>
+    <h2>Ediciones Disponibles:</h2>
+    
+    <ul>
+        <!-- Este es el lenguaje de plantillas de Django inyectando datos -->
+        {% for edicion in ediciones %}
+            <li>{{ edicion.año }} - {{ edicion.nombre_edicion }}</li>
+        {% empty %}
+            <li>No hay ediciones registradas en la base de datos.</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

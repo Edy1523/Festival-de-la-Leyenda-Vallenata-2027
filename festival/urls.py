@@ -16,8 +16,10 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path('admin/', admin.site.urls),
+    path('', include('votaciones.urls')), # Conecta la app de votaciones a la raíz del sitio
+    path('cuentas/', include('django.contrib.auth.urls')), # Para el login/logout futuro
 ]
