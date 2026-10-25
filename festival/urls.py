@@ -20,6 +20,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('votaciones.urls')), # Conecta la app de votaciones a la raíz del sitio
-    path('cuentas/', include('django.contrib.auth.urls')), # Para el login/logout futuro
+    path('', include('votaciones.urls')),
+    path('cuentas/', include('django.contrib.auth.urls')), # Maneja login y logout por defecto
+    path('usuarios/', include('usuarios.urls')), # Maneja nuestro registro
 ]
