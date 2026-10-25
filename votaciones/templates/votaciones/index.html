@@ -5,18 +5,35 @@
     <title>Festival Vallenato 2027</title>
 </head>
 <body>
-    <h1>Bienvenido al Festival de la Leyenda Vallenata</h1>
+    <header style="background-color: #f4f4f4; padding: 10px; margin-bottom: 20px;">
+        <!-- Lógica condicional de Django para la sesión -->
+        {% if user.is_authenticated %}
+            <span>Bienvenido, <strong>{{ user.username }}</strong></span> | 
+            
+            <!-- Django requiere que el logout sea por POST por seguridad -->
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Cerrar Sesión</button>
+            </form>
+        {% else %}
+            <span>Estás como visitante.</span> | 
+            <a href="{% url 'login' %}">Iniciar Sesión</a> | 
+            <a href="{% url 'usuarios:registro' %}">Crear Cuenta</a>
+        {% endif %}
+    </header>
+
+    <h1>Festival de la Leyenda Vallenata 2027</h1>
     <h2>Ediciones Disponibles:</h2>
     
     <ul>
-        <!-- Este es el lenguaje de plantillas de Django inyectando datos -->
         {% for edicion in ediciones %}
             <li>{{ edicion.año }} - {{ edicion.nombre_edicion }}</li>
         {% empty %}
             <li>No hay ediciones registradas en la base de datos.</li>
         {% endfor %}
     </ul>
-<br>
+
+    <br>
     <a href="{% url 'votaciones:categorias' %}">Ver Categorías en Competencia ➡</a>
 </body>
 </html>
