@@ -4,6 +4,7 @@ from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from .models import Edicion, Categoria, Votacion, Opcion, Voto
+from django.http import JsonResponse
 
 def index(request):
     ediciones = Edicion.objects.all().order_by('-año')
@@ -33,12 +34,41 @@ def registrar_voto(request, votacion_id):
     opcion = get_object_or_404(Opcion, pk=request.POST.get('opcion'), votacion=votacion)
     try:
         with transaction.atomic():
-            Voto.objects.create(usuario=request.user, votacion=votacion, opcion=opcion)
+            # Ahora guardamos el voto vinculando todas las entidades requeridas
+            Voto.objects.create(
+                usuario=request.user, 
+                votacion=votacion, 
+                opcion=opcion,
+                categoria=votacion.categoria,
+                edicion=votacion.edicion
+            )
     except IntegrityError:
-        messages.warning(request, 'Ya registraste tu voto en esta votación.')
+        messages.warning(request, 'Ya registraste tu voto en esta categoría para la edición actual.')
     else:
         messages.success(request, '¡Tu voto se registró correctamente!')
     return redirect('votaciones:detalle_categoria', categoria_id=votacion.categoria_id)
+
+def api_categorias(request):
+    categorias = Categoria.objects.filter(estado=True).prefetch_related('votaciones_categoria__opciones')
+    data = []
+    
+    for cat in categorias:
+        opciones_list = []
+        for votacion in cat.votaciones_categoria.filter(estado_apertura=True):
+            for op in votacion.opciones.all():
+                opciones_list.append({
+                    "id": op.id,
+                    "candidato": op.nombre_candidato,
+                    "fase": votacion.nombre_fase
+                })
+        
+        data.append({
+            "id": cat.id,
+            "categoria": cat.nombre,
+            "opciones": opciones_list
+        })
+        
+    return JsonResponse({"categorias": data}, safe=False)
 
 def contacto(request):
     return render(request, 'votaciones/contacto.html')

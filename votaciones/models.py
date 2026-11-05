@@ -50,15 +50,25 @@ class Opcion(models.Model):
         return f"{self.nombre_candidato} ({self.votacion})"
 
 class Voto(models.Model):
+    '''
+    Con estos cambios se cumple la regla de negocio donde cada usuario pueda elegir una sola opción por categoría y edición.
+    No emitir un segundo voto en la misma categoría, aunque esta contenga varios subeventos
+    '''
     usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='votos_festival')
     opcion = models.ForeignKey(Opcion, on_delete=models.PROTECT, related_name='votos')
     votacion = models.ForeignKey(Votacion, on_delete=models.CASCADE, related_name='votos')
+    # Campos obligatorios añadidos para cumplir la rúbrica
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='votos_categoria')
+    edicion = models.ForeignKey(Edicion, on_delete=models.CASCADE, related_name='votos_edicion')
     fecha = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Voto'
         verbose_name_plural = 'Votos'
-        constraints = [models.UniqueConstraint(fields=['usuario', 'votacion'], name='un_voto_por_usuario_y_votacion')]
+        # Regla central aplicada: unicidad por usuario, categoría y edición
+        constraints = [
+            models.UniqueConstraint(fields=['usuario', 'categoria', 'edicion'], name='un_voto_por_usuario_categoria_edicion')
+        ]
 
     def __str__(self):
-        return f'{self.usuario} - {self.votacion}'
+        return f'{self.usuario} - {self.opcion} ({self.categoria})'

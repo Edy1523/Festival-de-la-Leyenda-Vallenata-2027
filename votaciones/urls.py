@@ -8,4 +8,6 @@ urlpatterns = [
     path('categorias/<int:categoria_id>/', views.detalle_categoria, name='detalle_categoria'),
     path('votaciones/<int:votacion_id>/votar/', views.registrar_voto, name='registrar_voto'),
     path('contacto/', views.contacto, name='contacto'),
+    #ruta de la API agregada (Eje 3)
+    path('api/categorias/', views.api_categorias, name='api_categorias'),
 ]
