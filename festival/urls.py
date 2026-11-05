@@ -17,10 +17,13 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from votaciones import views as votaciones_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('votaciones.urls')),
-    path('cuentas/', include('django.contrib.auth.urls')), # Maneja login y logout por defecto
-    path('usuarios/', include('usuarios.urls')), # Maneja nuestro registro
+    path('contacto/', votaciones_views.contacto, name='contacto'),
+    path('cuentas/', include('django.contrib.auth.urls')),
+    path('usuarios/', include('usuarios.urls')),
 ]
+

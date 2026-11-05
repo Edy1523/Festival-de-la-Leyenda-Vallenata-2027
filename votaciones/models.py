@@ -48,3 +48,17 @@ class Opcion(models.Model):
 
     def __str__(self):
         return f"{self.nombre_candidato} ({self.votacion})"
+
+class Voto(models.Model):
+    usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name='votos_festival')
+    opcion = models.ForeignKey(Opcion, on_delete=models.PROTECT, related_name='votos')
+    votacion = models.ForeignKey(Votacion, on_delete=models.CASCADE, related_name='votos')
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Voto'
+        verbose_name_plural = 'Votos'
+        constraints = [models.UniqueConstraint(fields=['usuario', 'votacion'], name='un_voto_por_usuario_y_votacion')]
+
+    def __str__(self):
+        return f'{self.usuario} - {self.votacion}'
